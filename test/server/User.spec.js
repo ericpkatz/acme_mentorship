@@ -6,8 +6,8 @@ describe('Model: User', ()=> {
   beforeEach(async()=> {
     users = await db.seed();
   });
-  it('there are 2 users seeded', ()=> {
-    expect(Object.entries(users).length).to.equal(2);
+  it('there are 4 users seeded', ()=> {
+    expect(Object.entries(users).length).to.equal(4);
   });
   it('lucy is moes mentor', ()=> {
     expect(users.MOE.mentorId).to.equal(users.LUCY.id);
