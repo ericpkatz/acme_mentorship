@@ -7,9 +7,10 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: circleci/postgres:9.6.5-alpine-ram
+      - image: circleci/node:9.6-browsers
         environment:
           DATABASE_URL: postgres://postgres@localhost/circle_test
+      - image: circleci/postgres:9.6.5-alpine-ram
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
