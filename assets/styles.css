@@ -1,0 +1,26 @@
+body {
+  font-family: verdana;
+}
+button,select {
+  font-size: 1rem;
+  padding: 0.25rem;
+}
+
+ul {
+}
+
+li {
+  display: flex;
+  flex-direction: column;
+  border: solid 1px black;
+  margin: 1rem;
+  padding: 1rem;
+}
+
+li li {
+  border-width: 0;
+}
+
+li > * {
+  margin: 1rem 0;
+}
