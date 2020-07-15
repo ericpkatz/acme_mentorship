@@ -5,7 +5,7 @@ const db = require('./db');
 if(process.env.SEED){
   db.seed()
     .then( users => {
-      console.log(`${users.length} users seeded!`)
+      console.log(`${Object.keys(users).length} users seeded!`)
     })
     .catch(ex => {
       throw Error(ex)

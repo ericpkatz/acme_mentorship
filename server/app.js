@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 
 const app = express();
+app.use(require('body-parser').json());
 
 app.use('/dist', express.static(path.join(__dirname, '../dist')));
 
