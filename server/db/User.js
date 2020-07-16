@@ -1,5 +1,5 @@
 const conn = require('./conn');
-const { UUID, UUIDV4, STRING, ENUM } = conn.Sequelize;
+const { UUID, UUIDV4, STRING, ENUM, VIRTUAL } = conn.Sequelize;
 
 const User = conn.define('user', {
   id: {
@@ -19,6 +19,44 @@ const User = conn.define('user', {
     defaultValue: 'STUDENT',
     allowNull: false,
   },
+  isStudent: {
+    type: VIRTUAL,
+    get: function(){
+      return this.userType === 'STUDENT';
+    }
+  },
+  isTeacher: {
+    type: VIRTUAL,
+    get: function(){
+      return this.userType === 'TEACHER';
+    }
+  }
+}, {
+  hooks: {
+    beforeSave: async function(user){
+      if(user.userType === 'STUDENT'){
+        const mentees = await User.findAll({
+          where: {
+            mentorId: user.id
+          }
+        });
+        if(mentees.length){
+          throw Error('STUDENT CAN NOT HAVE MENTEES');
+        }
+        if(user.mentorId){
+          const mentor = await User.findByPk(user.mentorId);
+          if(!mentor.isTeacher){
+            throw Error('MENTOR MUST BE TEACHER');
+          }
+        }
+      }
+      else{
+        if(user.mentorId){
+          throw Error('A TEACHER CAN NOT HAVE A MENTOR');
+        }
+      }
+    }
+  }
 });
 
 User.belongsTo(User, { as: 'mentor' });
@@ -41,5 +79,7 @@ User.findTeachers = function () {
     include: [{ model: User, as: 'mentees' }],
   });
 };
+
+
 
 module.exports = User;
