@@ -38,9 +38,9 @@ const renderMentees = (mentees)=> {
     return `
       <li>
         ${ mentee.name }
-        <button data-action='delete-mentee' data-id='${mentee.id}'>x</button>
-        <button data-action='unassign-mentee' data-id='${mentee.id}'>Unassigne Mentee</button>
-        <button data-action='make-mentee-a-teacher' data-id='${mentee.id}'>Make Teacher</button>
+        <button data-teacher-id='${mentee.mentorId}' data-action='delete-mentee' data-id='${mentee.id}'>x</button>
+        <button data-teacher-id='${mentee.mentorId}' data-action='unassign-mentee' data-id='${mentee.id}'>Unassigne Mentee</button>
+        <button data-teacher-id='${mentee.mentorId}' data-action='make-mentee-a-teacher' data-id='${mentee.id}'>Make Teacher</button>
       </li>
     `;
   }).join(''); 
@@ -56,7 +56,7 @@ const renderUnassigned = ()=> {
           <option>--- assign to mentor ---</option>
           ${
             data.teachers.map( teacher => `
-              <option value='${student.id}' data-teacher-id='${teacher.id}'>${teacher.name}</option>
+              <option value='${teacher.id}'>${teacher.name}</option>
             `).join('')
           }
         </select>
@@ -77,29 +77,62 @@ const start = async()=> {
   renderUnassigned();
 };
 
+const getTeacherById = (id)=> {
+  return data.teachers.find( teacher => teacher.id === id);
+};
+
+const getMenteeById = (teacherId, id)=> {
+  return getTeacherById(teacherId).mentees.find( mentee => mentee.id === id);
+};
+
+const getUnassignedById = (id)=> {
+  return data.unassigned.find( student => student.id === id);
+}
+
 content.addEventListener('click', (ev)=> {
   const action = ev.target.getAttribute('data-action');
   const id = ev.target.getAttribute('data-id');
   if(action === 'delete-teacher'){
     console.log(action, id);
+    console.log(getTeacherById(id));
+    //TODO - make change on server and remove teacher
   }
   else if(action === 'delete-mentee'){
-    console.log(action, id);
+    console.log('TODO - delete this mentee', id);
+    const teacherId = ev.target.getAttribute('data-teacher-id');
+    console.log(getMenteeById(teacherId, id));
+    //TODO - make change on server and remove mentee from teacher 
   }
   else if(action === 'delete-unassigned'){
-    console.log(action, id);
+    console.log('TODO - delete this unassigned student', id);
+    console.log(getUnassignedById(id));
+    //TODO - make change on server and remove unassigned 
   }
   else if(action === 'make-teacher-a-student'){
-    console.log(action, id);
+    console.log('TODO - make this teacher a student', id);
+    console.log(getTeacherById(id));
+    //TODO - remove teacher from teachers
+    //TODO - add teacher to unassigned
   }
   else if(action === 'make-mentee-a-teacher'){
-    console.log(action, id);
+    console.log('TODO - make this mentee a teacher', id);
+    const teacherId = ev.target.getAttribute('data-teacher-id');
+    console.log(getMenteeById(teacherId, id));
+    //TODO - remove mentee from current mentor 
+    //TODO - add mentee to teachers
   }
   else if(action === 'make-unassigned-a-teacher'){
-    console.log(action, id);
+    console.log('TODO - make this student a teacher', id);
+    console.log(getUnassignedById(id));
+    //TODO - remove student from unassigned
+    //TODO - add student to teachers
   }
   else if(action === 'unassign-mentee'){
-    console.log(action, id);
+    console.log('TODO - unassign this mentee', id);
+    const teacherId = ev.target.getAttribute('data-teacher-id');
+    console.log(getMenteeById(teacherId, id));
+    //TODO - remove mentee from current mentor 
+    //TODO - add mentee to unassigned 
   }
 });
 
@@ -107,7 +140,11 @@ content.addEventListener('change', (ev)=> {
   const action = ev.target.getAttribute('data-action');
   const id = ev.target.getAttribute('data-id');
   if(action === 'assign-mentor'){
-    console.log(action, id);
+    console.log('TODO - assign this user to this teacher', id, ev.target.value);
+    console.log(getTeacherById(ev.target.value));
+    console.log(getUnassignedById(id));
+    //TODO - remove student from unassigned 
+    //TODO - add student to teacher 
   }
 });
 
