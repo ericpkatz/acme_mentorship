@@ -94,9 +94,14 @@ content.addEventListener('click', async(ev)=> {
   const action = ev.target.getAttribute('data-action');
   const id = ev.target.getAttribute('data-id');
   if(action === 'create-student'){
-    const student = (await axios.post('/api/users', { name: studentNameField.value})).data;
-    data.unassigned = [student, ...data.unassigned];
-    render();
+    try{
+      const student = (await axios.post('/api/users', { name: studentNameField.value})).data;
+      data.unassigned = [student, ...data.unassigned];
+      render();
+    }
+    catch(ex){
+      error.innerText = ex.response.data.message;
+    }
   }
   else if(action === 'delete-teacher'){
     console.log(action, id);
