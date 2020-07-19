@@ -41,3 +41,7 @@ li > * {
 #student-form > * {
   margin-bottom: 1rem;
 }
+
+#error {
+  color: red;
+}

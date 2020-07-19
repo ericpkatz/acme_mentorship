@@ -56,11 +56,11 @@ describe('Routes: User', () => {
   describe('DELETE /users/:id', ()=> {
     describe('user exists', ()=> {
       it('a user can be deleted', async()=> {
-        let lucy = users.LUCY;
-        const response = await app.delete(`/api/users/${lucy.id}`);
+        let moe = users.MOE;
+        const response = await app.delete(`/api/users/${moe.id}`);
         expect(response.status).to.equal(204);
-        lucy = await User.findByPk(users.LUCY.id);
-        expect(lucy).to.equal(null);
+        moe = await User.findByPk(users.MOE.id);
+        expect(moe).to.equal(null);
       });
     });
     describe('user does not exist', ()=> {

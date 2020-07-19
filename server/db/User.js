@@ -10,6 +10,7 @@ const User = conn.define('user', {
   name: {
     type: STRING,
     allowNull: false,
+    unique: true,
     validate: {
       notEmpty: true,
     },
@@ -33,6 +34,18 @@ const User = conn.define('user', {
   }
 }, {
   hooks: {
+    beforeDestroy: async function(user){
+      if(user.userType === 'TEACHER'){
+        const mentees = await User.findAll({
+          where: {
+            mentorId: user.id
+          }
+        });
+        if(mentees.length){
+          throw Error('A MENTOR CAN NOT BE DELETED');
+        }
+      }
+    },
     beforeSave: async function(user){
       if(user.userType === 'STUDENT'){
         const mentees = await User.findAll({

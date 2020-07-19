@@ -29,7 +29,19 @@ describe('Model: User', ()=> {
     expect(users.MOE.mentorId).to.equal(users.LUCY.id);
   });
 
+
   describe('creating', ()=> {
+    describe('when name is not unique', ()=> {
+      it('can not be create', async()=> {
+        try {
+          await User.create({ name: 'LUCY'});
+          throw Error('noooo');
+        }
+        catch(ex){
+          expect(ex.errors[0].path).to.equal('name');
+        }
+      });
+    });
     describe('when a mentor is not a TEACHER', ()=> {
       it('can NOT be created', async()=> {
         const eddy = users.EDDY;
@@ -69,6 +81,29 @@ describe('Model: User', ()=> {
         const eddy = users.EDDY;
         const lucy = users.LUCY;
         await eddy.update({ mentorId: lucy.id}); 
+      });
+    });
+  });
+
+  describe('deleting', ()=> {
+    describe('a teacher WHO mentors', ()=> {
+      it('can NOT be deleted', async()=> {
+        const lucy = users.LUCY;
+        try {
+          await lucy.destroy(); 
+          throw Error('noooo');
+        }
+        catch(ex){
+          expect(ex.message).to.equal('A MENTOR CAN NOT BE DELETED');
+        }
+      });
+    });
+    describe('a teacher who does not mentor', ()=> {
+      it('can be deleted', async()=> {
+        const moe = users.MOE;
+        await moe.update({ mentorId: null}); 
+        const lucy = users.LUCY;
+        await lucy.destroy();
       });
     });
   });

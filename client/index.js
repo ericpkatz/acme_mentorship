@@ -2,7 +2,9 @@ import axios from 'axios';
 
 const teacherList = document.querySelector('#teachers');
 const unassignedList = document.querySelector('#unassigned');
+const studentNameField = document.querySelector('#name');
 const content = document.querySelector('#content');
+const error = document.querySelector('#error');
 
 const data = {
   teachers: [],
@@ -21,7 +23,7 @@ const renderTeachers = ()=> {
   const html = data.teachers.map( teacher => {
     return `
       <li>
-        ${ teacher.name }
+        ${ teacher.name } (${teacher.mentees.length} mentees)
         <button data-action='delete-teacher' data-id='${teacher.id}'>x</button>
         <button data-action='make-teacher-a-student' data-id='${teacher.id}'>Make Student</button>
         <ul>
@@ -73,8 +75,7 @@ const start = async()=> {
     fetchTeachers(),
     fetchUnassigned()
   ]);
-  renderTeachers();
-  renderUnassigned();
+  render();
 };
 
 const getTeacherById = (id)=> {
@@ -89,63 +90,99 @@ const getUnassignedById = (id)=> {
   return data.unassigned.find( student => student.id === id);
 }
 
-content.addEventListener('click', (ev)=> {
+content.addEventListener('click', async(ev)=> {
   const action = ev.target.getAttribute('data-action');
   const id = ev.target.getAttribute('data-id');
-  if(action === 'delete-teacher'){
+  if(action === 'create-student'){
+    const student = (await axios.post('/api/users', { name: studentNameField.value})).data;
+    data.unassigned = [student, ...data.unassigned];
+    render();
+  }
+  else if(action === 'delete-teacher'){
     console.log(action, id);
-    console.log(getTeacherById(id));
-    //TODO - make change on server and remove teacher
+    try {
+      await axios.delete(`/api/users/${id}`)
+      data.teachers = data.teachers.filter(teacher => teacher.id !== id);
+      render();
+    }
+    catch(ex){
+      error.innerText = ex.response.data.message;
+    }
   }
   else if(action === 'delete-mentee'){
     console.log('TODO - delete this mentee', id);
     const teacherId = ev.target.getAttribute('data-teacher-id');
-    console.log(getMenteeById(teacherId, id));
-    //TODO - make change on server and remove mentee from teacher 
+    const teacher = getTeacherById(teacherId);
+    await axios.delete(`/api/users/${id}`)
+    teacher.mentees = teacher.mentees.filter(mentee => mentee.id !== id);
+    render();
   }
   else if(action === 'delete-unassigned'){
-    console.log('TODO - delete this unassigned student', id);
-    console.log(getUnassignedById(id));
-    //TODO - make change on server and remove unassigned 
+    await axios.delete(`/api/users/${id}`)
+    data.unassigned = data.unassigned.filter(student => student.id !== id);
+    render();
   }
   else if(action === 'make-teacher-a-student'){
-    console.log('TODO - make this teacher a student', id);
-    console.log(getTeacherById(id));
-    //TODO - remove teacher from teachers
-    //TODO - add teacher to unassigned
+    try {
+      const student = (await axios.put(`/api/users/${id}`, {userType: 'STUDENT'})).data;
+      data.unassigned.push(student);
+      data.teachers = data.teachers.filter(teacher => teacher.id !== id);
+      render();
+    }
+    catch(ex){
+      error.innerText = ex.response.data.message;
+    }
   }
   else if(action === 'make-mentee-a-teacher'){
     console.log('TODO - make this mentee a teacher', id);
     const teacherId = ev.target.getAttribute('data-teacher-id');
-    console.log(getMenteeById(teacherId, id));
-    //TODO - remove mentee from current mentor 
-    //TODO - add mentee to teachers
+    const mentor = getTeacherById(teacherId);
+    try {
+      const teacher = (await axios.put(`/api/users/${id}`, {userType: 'TEACHER'})).data;
+      mentor.mentees = mentor.mentees.filter(mentee => mentee.id === id);
+      data.teachers = [teacher, ...data.teachers];
+      render();
+    }
+    catch(ex){
+      error.innerText = ex.response.data.message;
+    }
   }
   else if(action === 'make-unassigned-a-teacher'){
     console.log('TODO - make this student a teacher', id);
-    console.log(getUnassignedById(id));
-    //TODO - remove student from unassigned
-    //TODO - add student to teachers
+    const teacher = (await axios.put(`/api/users/${id}`, {userType: 'TEACHER'})).data;
+    teacher.mentees = [];
+    data.unassigned = data.unassigned.filter(student => student.id !== id);
+    data.teachers = [teacher, ...data.teachers];
+    render();
   }
   else if(action === 'unassign-mentee'){
     console.log('TODO - unassign this mentee', id);
     const teacherId = ev.target.getAttribute('data-teacher-id');
-    console.log(getMenteeById(teacherId, id));
-    //TODO - remove mentee from current mentor 
-    //TODO - add mentee to unassigned 
+    const mentor = getTeacherById(teacherId);
+    const student = (await axios.put(`/api/users/${id}`, { mentorId: null})).data;
+    data.unassigned.push(student);
+    mentor.mentees = mentor.mentees.filter(mentee => mentee.id !== id);
+    render();
   }
 });
 
-content.addEventListener('change', (ev)=> {
+content.addEventListener('change', async(ev)=> {
   const action = ev.target.getAttribute('data-action');
   const id = ev.target.getAttribute('data-id');
   if(action === 'assign-mentor'){
-    console.log('TODO - assign this user to this teacher', id, ev.target.value);
-    console.log(getTeacherById(ev.target.value));
-    console.log(getUnassignedById(id));
-    //TODO - remove student from unassigned 
-    //TODO - add student to teacher 
+    const mentor = getTeacherById(ev.target.value);
+    const student = (await axios.put(`/api/users/${id}`, { mentorId: ev.target.value})).data;
+    data.unassigned = data.unassigned.filter(_student => _student.id !== id);
+    mentor.mentees.push(student);
+    render();
   }
 });
+
+const render = ()=> {
+  renderTeachers();
+  renderUnassigned();
+  studentNameField.value = '';
+  error.innerText = '';
+};
 
 start();

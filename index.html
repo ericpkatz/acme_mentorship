@@ -5,12 +5,13 @@
   </head>
   <body>
     <h1>Acme Membership</h1>
+    <div id='error'></div>
     <div id='content'>
       <div>
         <h2>Create A Student</h2>
         <div id='student-form'>
-          <input placeholder='add a student' />
-          <button>Create Student</button>
+          <input placeholder='add a student' id='name'/>
+          <button data-action='create-student'>Create Student</button>
         </div>
       </div>
       <div>
