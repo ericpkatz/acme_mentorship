@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --recursive --exit",
-    "test:dev": "DATABASE_URL=postgres://localhost/acme_mentorship_db_test npm run test -- --watch",
-    "start:dev:seed": "SEED=true npm run start:dev",
-    "start:dev": "nodemon server --ignore client/ --ignore dist/ & npm run webpack -- --watch --mode=development",
+    "test-dev": "DATABASE_URL=postgres://localhost/acme_mentorship_db_test npm run test -- --watch",
+    "start-dev-seed": "SEED=true npm run start-dev",
+    "start-dev": "nodemon server --ignore client/ --ignore dist/ & npm run webpack -- --watch --mode=development",
     "lint": "eslint .",
     "lint-fix": "eslint --fix .",
     "format": "prettier --write .",
