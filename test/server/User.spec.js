@@ -9,12 +9,13 @@ describe('Model: User', () => {
 
   beforeEach(async () => {
     await conn.sync({ force: true });
-    const [moe, lucy, wanda, eddy] = (_users = await Promise.all([
+    const _users = await Promise.all([
       User.create({ name: 'MOE' }),
       User.create({ name: 'LUCY', userType: 'TEACHER' }),
       User.create({ name: 'WANDA' }),
       User.create({ name: 'EDDY' }),
-    ]));
+    ]);
+    const [moe, lucy] = _users;
     await moe.setMentor(lucy);
     users = _users.reduce((acc, user) => {
       acc[user.name] = user;

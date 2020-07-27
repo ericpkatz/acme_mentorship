@@ -1,6 +1,5 @@
 const { expect } = require('chai');
 const db = require('../../server/db');
-const { User } = db.models;
 const _app = require('../../server/app');
 const app = require('supertest')(_app);
 
@@ -11,12 +10,13 @@ describe('Routes: User', () => {
 
   beforeEach(async () => {
     await conn.sync({ force: true });
-    const [moe, lucy, wanda, eddy] = (_users = await Promise.all([
+    const _users = await Promise.all([
       User.create({ name: 'MOE' }),
       User.create({ name: 'LUCY', userType: 'TEACHER' }),
       User.create({ name: 'WANDA' }),
       User.create({ name: 'EDDY' }),
-    ]));
+    ]);
+    const [moe, lucy] = _users;
     await moe.setMentor(lucy);
     users = _users.reduce((acc, user) => {
       acc[user.name] = user;

@@ -1,21 +1,9 @@
-const conn = require('./conn');
+const db = require('./db');
 const User = require('./User');
 
 const seed = async () => {
-  await conn.sync({ force: true });
-  const [
-    moe,
-    lucy,
-    red,
-    wanda,
-    eddy,
-    freddie,
-    carl,
-    mel,
-    steve,
-    jack,
-    rob,
-  ] = (users = await Promise.all([
+  await db.sync({ force: true });
+  const users = await Promise.all([
     User.create({ name: 'MOE' }),
     User.create({ name: 'LUCY', userType: 'TEACHER' }),
     User.create({ name: 'RED', userType: 'TEACHER' }),
@@ -27,7 +15,20 @@ const seed = async () => {
     User.create({ name: 'STEVE' }),
     User.create({ name: 'JACK', userType: 'TEACHER' }),
     User.create({ name: 'ROB' }),
-  ]));
+  ]);
+  const [
+    moe,
+    lucy,
+    red, // eslint-disable-line no-unused-vars
+    wanda, // eslint-disable-line no-unused-vars
+    eddy, // eslint-disable-line no-unused-vars
+    freddie,
+    carl,
+    mel, // eslint-disable-line no-unused-vars
+    steve,
+    jack,
+    rob,
+  ] = users;
   await moe.setMentor(lucy);
   await steve.setMentor(carl);
   await rob.setMentor(carl);
@@ -40,7 +41,7 @@ const seed = async () => {
 };
 
 module.exports = {
-  conn,
+  db,
   seed,
   models: {
     User,
