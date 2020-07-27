@@ -1,7 +1,7 @@
-const conn = require('./conn');
-const { UUID, UUIDV4, STRING, ENUM, VIRTUAL } = conn.Sequelize;
+const db = require('./db');
+const { UUID, UUIDV4, STRING, ENUM, VIRTUAL } = db.Sequelize;
 
-const User = conn.define(
+const User = db.define(
   'user',
   {
     id: {

@@ -1,15 +1,16 @@
 const { expect } = require('chai');
-const db = require('../../server/db');
+const {
+  db,
+  models: { User },
+} = require('../../server/db');
 const _app = require('../../server/app');
 const app = require('supertest')(_app);
 
 describe('Routes: User', () => {
   let users;
-  const { conn } = db;
-  const { User } = db.models;
 
   beforeEach(async () => {
-    await conn.sync({ force: true });
+    await db.sync({ force: true });
     const _users = await Promise.all([
       User.create({ name: 'MOE' }),
       User.create({ name: 'LUCY', userType: 'TEACHER' }),
