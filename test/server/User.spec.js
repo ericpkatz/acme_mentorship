@@ -28,16 +28,16 @@ describe('Model: User', () => {
       return acc;
     }, {});
   });
-  it('there are 4 users seeded', () => {
+  xit('there are 4 users seeded', () => {
     expect(Object.entries(users).length).to.equal(4);
   });
-  it('lucy is moes mentor', () => {
+  xit('lucy is moes mentor', () => {
     expect(users.MOE.mentorId).to.equal(users.LUCY.id);
   });
 
   describe('creating', () => {
     describe('when name is not unique', () => {
-      it('can not be create', async () => {
+      xit('can not be create', async () => {
         try {
           await User.create({ name: 'LUCY' });
           throw Error('noooo');
@@ -47,7 +47,7 @@ describe('Model: User', () => {
       });
     });
     describe('when a mentor is not a TEACHER', () => {
-      it('can NOT be created', async () => {
+      xit('can NOT be created', async () => {
         const eddy = users.EDDY;
         try {
           await User.create({ name: 'JERRY', mentorId: eddy.id });
@@ -58,7 +58,7 @@ describe('Model: User', () => {
       });
     });
     describe('when a mentor is a TEACHER', () => {
-      it('can be created', async () => {
+      xit('can be created', async () => {
         const lucy = users.LUCY;
         await User.create({ name: 'JERRY', mentorId: lucy.id });
       });
@@ -67,7 +67,7 @@ describe('Model: User', () => {
 
   describe('updating', () => {
     describe('when a mentor is not a TEACHER', () => {
-      it('can NOT be updated', async () => {
+      xit('can NOT be updated', async () => {
         const eddy = users.EDDY;
         const wanda = users.WANDA;
         try {
@@ -79,7 +79,7 @@ describe('Model: User', () => {
       });
     });
     describe('when a mentor is a TEACHER', () => {
-      it('can be updated', async () => {
+      xit('can be updated', async () => {
         const eddy = users.EDDY;
         const lucy = users.LUCY;
         await eddy.update({ mentorId: lucy.id });
@@ -89,7 +89,7 @@ describe('Model: User', () => {
 
   describe('deleting', () => {
     describe('a teacher WHO mentors', () => {
-      it('can NOT be deleted', async () => {
+      xit('can NOT be deleted', async () => {
         const lucy = users.LUCY;
         try {
           await lucy.destroy();
@@ -100,7 +100,7 @@ describe('Model: User', () => {
       });
     });
     describe('a teacher who does not mentor', () => {
-      it('can be deleted', async () => {
+      xit('can be deleted', async () => {
         const moe = users.MOE;
         await moe.update({ mentorId: null });
         const lucy = users.LUCY;
@@ -111,12 +111,12 @@ describe('Model: User', () => {
 
   describe('isStudent virtual property', () => {
     describe('when the user is a STUDENT', () => {
-      it('is true', () => {
+      xit('is true', () => {
         expect(users.MOE.isStudent).to.equal(true);
       });
     });
     describe('when the user is NOT a STUDENT', () => {
-      it('is false', () => {
+      xit('is false', () => {
         expect(users.LUCY.isStudent).to.equal(false);
       });
     });
@@ -124,12 +124,12 @@ describe('Model: User', () => {
 
   describe('isTeacher virtual property', () => {
     describe('when the user is a TEACHER', () => {
-      it('is true', () => {
+      xit('is true', () => {
         expect(users.LUCY.isTeacher).to.equal(true);
       });
     });
     describe('when the user is NOT a TEACHER', () => {
-      it('is false', () => {
+      xit('is false', () => {
         expect(users.MOE.isTeacher).to.equal(false);
       });
     });
@@ -138,7 +138,7 @@ describe('Model: User', () => {
   describe('userType', () => {
     describe('changing to TEACHER', () => {
       describe('when the user is a mentee', () => {
-        it('userType can not be changed', async () => {
+        xit('userType can not be changed', async () => {
           const moe = users.MOE;
           moe.userType = 'TEACHER';
           try {
@@ -151,7 +151,7 @@ describe('Model: User', () => {
       });
       describe('when the user is not a mentee', () => {
         beforeEach(async () => users.MOE.setMentor(null));
-        it('userType can be changed', async () => {
+        xit('userType can be changed', async () => {
           const moe = users.MOE;
           moe.userType = 'TEACHER';
           await moe.save();
@@ -160,7 +160,7 @@ describe('Model: User', () => {
     });
     describe('changing to STUDENT', () => {
       describe('When the user has no mentees', () => {
-        it('userType can be changed', async () => {
+        xit('userType can be changed', async () => {
           const moe = users.MOE;
           await moe.setMentor(null);
           const lucy = users.LUCY;
@@ -171,7 +171,7 @@ describe('Model: User', () => {
       });
 
       describe('when there ARE mentees', () => {
-        it('userType can NOT be changed', async () => {
+        xit('userType can NOT be changed', async () => {
           const lucy = users.LUCY;
           lucy.userType = 'STUDENT';
           try {
