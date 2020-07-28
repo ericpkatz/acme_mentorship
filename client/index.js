@@ -184,7 +184,7 @@ content.addEventListener('change', async (ev) => {
   const action = ev.target.getAttribute('data-action');
   const id = +ev.target.getAttribute('data-id');
   if (action === 'assign-mentor') {
-    const mentor = getTeacherById(ev.target.value);
+    const mentor = getTeacherById(+ev.target.value);
     const student = (
       await axios.put(`/api/users/${id}`, { mentorId: ev.target.value })
     ).data;

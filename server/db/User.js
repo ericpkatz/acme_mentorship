@@ -50,13 +50,15 @@ const User = db.define(
       },
       beforeSave: async function (user) {
         if (user.userType === 'STUDENT') {
-          const mentees = await User.findAll({
-            where: {
-              mentorId: user.id,
-            },
-          });
-          if (mentees.length) {
-            throw Error('STUDENT CAN NOT HAVE MENTEES');
+          if (!user.isNewRecord) {
+            const mentees = await User.findAll({
+              where: {
+                mentorId: user.id,
+              },
+            });
+            if (mentees.length) {
+              throw Error('STUDENT CAN NOT HAVE MENTEES');
+            }
           }
           if (user.mentorId) {
             const mentor = await User.findByPk(user.mentorId);
