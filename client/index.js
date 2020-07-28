@@ -103,7 +103,7 @@ const getUnassignedById = (id) => {
 
 content.addEventListener('click', async (ev) => {
   const action = ev.target.getAttribute('data-action');
-  const id = ev.target.getAttribute('data-id');
+  const id = +ev.target.getAttribute('data-id');
   if (action === 'create-student') {
     try {
       const student = (
@@ -125,7 +125,7 @@ content.addEventListener('click', async (ev) => {
     }
   } else if (action === 'delete-mentee') {
     console.log('TODO - delete this mentee', id);
-    const teacherId = ev.target.getAttribute('data-teacher-id');
+    const teacherId = +ev.target.getAttribute('data-teacher-id');
     const teacher = getTeacherById(teacherId);
     await axios.delete(`/api/users/${id}`);
     teacher.mentees = teacher.mentees.filter((mentee) => mentee.id !== id);
@@ -147,7 +147,7 @@ content.addEventListener('click', async (ev) => {
     }
   } else if (action === 'make-mentee-a-teacher') {
     console.log('TODO - make this mentee a teacher', id);
-    const teacherId = ev.target.getAttribute('data-teacher-id');
+    const teacherId = +ev.target.getAttribute('data-teacher-id');
     const mentor = getTeacherById(teacherId);
     try {
       const teacher = (
@@ -170,7 +170,7 @@ content.addEventListener('click', async (ev) => {
     render();
   } else if (action === 'unassign-mentee') {
     console.log('TODO - unassign this mentee', id);
-    const teacherId = ev.target.getAttribute('data-teacher-id');
+    const teacherId = +ev.target.getAttribute('data-teacher-id');
     const mentor = getTeacherById(teacherId);
     const student = (await axios.put(`/api/users/${id}`, { mentorId: null }))
       .data;
@@ -182,9 +182,9 @@ content.addEventListener('click', async (ev) => {
 
 content.addEventListener('change', async (ev) => {
   const action = ev.target.getAttribute('data-action');
-  const id = ev.target.getAttribute('data-id');
+  const id = +ev.target.getAttribute('data-id');
   if (action === 'assign-mentor') {
-    const mentor = getTeacherById(ev.target.value);
+    const mentor = getTeacherById(+ev.target.value);
     const student = (
       await axios.put(`/api/users/${id}`, { mentorId: ev.target.value })
     ).data;

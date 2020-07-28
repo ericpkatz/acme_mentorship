@@ -26,7 +26,7 @@ describe('Routes: User', () => {
   });
 
   describe('GET /users/unassigned', () => {
-    it('responds with two unassigned users', async () => {
+    xit('responds with two unassigned users', async () => {
       const response = await app.get('/api/users/unassigned');
       expect(response.status).to.equal(200);
       expect(response.body.length).to.equal(2);
@@ -35,11 +35,11 @@ describe('Routes: User', () => {
       expect(names).to.include('EDDY');
     });
 
-    xit('TODO HANDLE ERRORS TESTS', () => {});
+    xit('TODO: HANDLE ERRORS TESTS', () => {});
   });
 
   describe('GET /users/teachers', () => {
-    it('responds with users', async () => {
+    xit('responds with users', async () => {
       const response = await app.get('/api/users/teachers');
       expect(response.status).to.equal(200);
       expect(response.body.length).to.equal(1);
@@ -49,12 +49,12 @@ describe('Routes: User', () => {
       expect(moe.name).to.equal('MOE');
     });
 
-    xit('TODO HANDLE ERRORS TESTS', () => {});
+    xit('TODO: HANDLE ERRORS TESTS', () => {});
   });
 
   describe('DELETE /users/:id', () => {
     describe('user exists', () => {
-      it('a user can be deleted', async () => {
+      xit('a user can be deleted', async () => {
         let moe = users.MOE;
         const response = await app.delete(`/api/users/${moe.id}`);
         expect(response.status).to.equal(204);
@@ -63,33 +63,34 @@ describe('Routes: User', () => {
       });
     });
     describe('user does not exist', () => {
-      xit('TODO - 404?', async () => {});
+      xit('TODO: - 404?', async () => {});
     });
     describe('called with an id which is silly', () => {
-      xit('TODO - 404?', async () => {});
+      xit('TODO: - 404?', async () => {});
     });
     describe('user is a mentor', () => {
-      xit('TODO - 500?', async () => {});
+      xit('TODO: - 500?', async () => {});
     });
   });
 
   describe('POST /users', () => {
     describe('valid data', () => {
-      it('returns the user', async () => {
+      xit('returns the user', async () => {
         const response = await app.post('/api/users').send({ name: 'Flip' });
         expect(response.status).to.equal(201);
+        expect(response.body.name).to.equal('Flip');
       });
     });
     describe('invalid data', () => {
       describe('name exists', () => {
-        xit('TODO returns 500', async () => {});
+        xit('TODO: returns 500', async () => {});
       });
     });
   });
 
   describe('PUT /users/:id', () => {
     describe('valid data', () => {
-      it('returns the updated user', async () => {
+      xit('returns the updated user', async () => {
         const response = await app
           .put(`/api/users/${users.EDDY.id}`)
           .send({ name: 'Eddie', userType: 'TEACHER' });
@@ -100,7 +101,7 @@ describe('Routes: User', () => {
 
     describe('invalid data', () => {
       describe('user does not exist', () => {
-        xit('TODO returns 500', async () => {});
+        xit('TODO: returns 500', async () => {});
       });
     });
   });
