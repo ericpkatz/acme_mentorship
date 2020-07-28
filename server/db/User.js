@@ -1,14 +1,13 @@
 const db = require('./db');
 const { UUID, UUIDV4, STRING, ENUM, VIRTUAL } = db.Sequelize;
 
+// const User = db.define('user', {
+//   // ...
+// });
+
 const User = db.define(
   'user',
   {
-    id: {
-      primaryKey: true,
-      defaultValue: UUIDV4,
-      type: UUID,
-    },
     name: {
       type: STRING,
       allowNull: false,
@@ -74,6 +73,19 @@ const User = db.define(
     },
   }
 );
+
+/**
+ * We've created the association for you!
+ *
+ * A user can be related to another user as a mentor:
+ *       SALLY (mentor)
+ *         |
+ *       /   \
+ *     MOE   WANDA
+ * (mentee)  (mentee)
+ * You can find the mentor of a user by the mentorId field
+ * In Sequelize, you can also use the magic method getMentor()
+ */
 
 User.belongsTo(User, { as: 'mentor' });
 User.hasMany(User, { as: 'mentees', foreignKey: 'mentorId' });

@@ -78,6 +78,7 @@ describe('Routes: User', () => {
       it('returns the user', async () => {
         const response = await app.post('/api/users').send({ name: 'Flip' });
         expect(response.status).to.equal(201);
+        expect(response.body.name).to.equal('Flip');
       });
     });
     describe('invalid data', () => {

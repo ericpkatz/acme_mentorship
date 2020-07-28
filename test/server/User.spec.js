@@ -4,6 +4,12 @@ const {
   models: { User },
 } = require('../../server/db');
 
+/**
+ * You'll have to configure the User model to have a name field and a
+ * userType field. You'll also be asked to create two virtual fields,
+ * isTeacher and isStudent.
+ */
+
 describe('Model: User', () => {
   let users;
 
