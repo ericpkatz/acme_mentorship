@@ -6,6 +6,7 @@ const {
 const _app = require('../../server/app');
 const app = require('supertest')(_app);
 
+// TODO: Make the starting point API respond with 404 instead of 200
 describe('Routes: User', () => {
   let users;
 

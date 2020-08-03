@@ -10,7 +10,7 @@ const {
  * isTeacher and isStudent.
  */
 
-describe('Model: User', () => {
+describe.only('Model: User', () => {
   let users;
 
   beforeEach(async () => {
@@ -28,26 +28,33 @@ describe('Model: User', () => {
       return acc;
     }, {});
   });
-  xit('there are 4 users seeded', () => {
+  // TODO: Test should be about adding user's name, rather than being four of them..
+  // TODO: Tell student to go look at server/db/User.js
+  it('there are 4 users seeded', () => {
     expect(Object.entries(users).length).to.equal(4);
   });
-  xit('lucy is moes mentor', () => {
+  // TODO: Maybe this doesn't need to be a test, since we already create the association.
+  it('lucy is moes mentor', () => {
     expect(users.MOE.mentorId).to.equal(users.LUCY.id);
   });
 
   describe('creating', () => {
     describe('when name is not unique', () => {
-      xit('can not be create', async () => {
+      it('can not be created', async () => {
         try {
-          await User.create({ name: 'LUCY' });
+          await User.create({ name: 'ERIC' });
+          await User.create({ name: 'ERIC' });
           throw Error('noooo');
         } catch (ex) {
           expect(ex.errors[0].path).to.equal('name');
         }
       });
     });
+    // TODO: Needs to make a test for userType BEFORE this test
+    // TODO: THe error message shouldn't have to be hard-coded.
+    // NOTE: Have students seen manual errors thrown in Sequelize hooks before?
     describe('when a mentor is not a TEACHER', () => {
-      xit('can NOT be created', async () => {
+      it('can NOT be created', async () => {
         const eddy = users.EDDY;
         try {
           await User.create({ name: 'JERRY', mentorId: eddy.id });
@@ -57,8 +64,9 @@ describe('Model: User', () => {
         }
       });
     });
+    //TODO: Tell them that userType should be an ENUM
     describe('when a mentor is a TEACHER', () => {
-      xit('can be created', async () => {
+      it('can be created', async () => {
         const lucy = users.LUCY;
         await User.create({ name: 'JERRY', mentorId: lucy.id });
       });
@@ -67,7 +75,9 @@ describe('Model: User', () => {
 
   describe('updating', () => {
     describe('when a mentor is not a TEACHER', () => {
-      xit('can NOT be updated', async () => {
+      // TODO: Clarify what sort of updates are valid?
+      // TODO: Even on updates, you cannot set a non-teacher to be someone's mentor.
+      it('can NOT be updated', async () => {
         const eddy = users.EDDY;
         const wanda = users.WANDA;
         try {
@@ -79,7 +89,7 @@ describe('Model: User', () => {
       });
     });
     describe('when a mentor is a TEACHER', () => {
-      xit('can be updated', async () => {
+      it('can be updated', async () => {
         const eddy = users.EDDY;
         const lucy = users.LUCY;
         await eddy.update({ mentorId: lucy.id });
@@ -89,7 +99,8 @@ describe('Model: User', () => {
 
   describe('deleting', () => {
     describe('a teacher WHO mentors', () => {
-      xit('can NOT be deleted', async () => {
+      // TODO: Maybe throw them a hint to look at beforeDestroy hook
+      it('can NOT be deleted', async () => {
         const lucy = users.LUCY;
         try {
           await lucy.destroy();
@@ -99,8 +110,8 @@ describe('Model: User', () => {
         }
       });
     });
-    describe('a teacher who does not mentor', () => {
-      xit('can be deleted', async () => {
+    describe('a teacher who does not mentees', () => {
+      it('can be deleted', async () => {
         const moe = users.MOE;
         await moe.update({ mentorId: null });
         const lucy = users.LUCY;
@@ -111,12 +122,13 @@ describe('Model: User', () => {
 
   describe('isStudent virtual property', () => {
     describe('when the user is a STUDENT', () => {
-      xit('is true', () => {
+      // TODO: This test is ACTUALLY about default userType === STUDENT. Make a new test about that explicitly.
+      it('is true', () => {
         expect(users.MOE.isStudent).to.equal(true);
       });
     });
     describe('when the user is NOT a STUDENT', () => {
-      xit('is false', () => {
+      it('is false', () => {
         expect(users.LUCY.isStudent).to.equal(false);
       });
     });
@@ -124,12 +136,12 @@ describe('Model: User', () => {
 
   describe('isTeacher virtual property', () => {
     describe('when the user is a TEACHER', () => {
-      xit('is true', () => {
+      it('is true', () => {
         expect(users.LUCY.isTeacher).to.equal(true);
       });
     });
     describe('when the user is NOT a TEACHER', () => {
-      xit('is false', () => {
+      it('is false', () => {
         expect(users.MOE.isTeacher).to.equal(false);
       });
     });
@@ -138,7 +150,7 @@ describe('Model: User', () => {
   describe('userType', () => {
     describe('changing to TEACHER', () => {
       describe('when the user is a mentee', () => {
-        xit('userType can not be changed', async () => {
+        it('userType can not be changed', async () => {
           const moe = users.MOE;
           moe.userType = 'TEACHER';
           try {
@@ -151,16 +163,18 @@ describe('Model: User', () => {
       });
       describe('when the user is not a mentee', () => {
         beforeEach(async () => users.MOE.setMentor(null));
-        xit('userType can be changed', async () => {
+        // TODO: This one could probably use a demo, or a link to a YouTube demonstration of the working front-end
+        it('userType can be changed', async () => {
           const moe = users.MOE;
           moe.userType = 'TEACHER';
           await moe.save();
         });
       });
     });
+    // TODO: Add an example. E.g. If LUCY is a teacher, but isn't mentoring anyone, she can be changed to student.
     describe('changing to STUDENT', () => {
       describe('When the user has no mentees', () => {
-        xit('userType can be changed', async () => {
+        it('userType can be changed', async () => {
           const moe = users.MOE;
           await moe.setMentor(null);
           const lucy = users.LUCY;
@@ -170,8 +184,10 @@ describe('Model: User', () => {
         });
       });
 
+      // TODO: Sometimes we prefer that an error be thrown instead of the data to be changed.
       describe('when there ARE mentees', () => {
-        xit('userType can NOT be changed', async () => {
+        // TODO: Clarify for students what we need them to do here...
+        it('userType can NOT be changed', async () => {
           const lucy = users.LUCY;
           lucy.userType = 'STUDENT';
           try {
