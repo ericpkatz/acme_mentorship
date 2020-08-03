@@ -10,7 +10,7 @@ const {
  * isTeacher and isStudent.
  */
 
-describe.only('Model: User', () => {
+describe('Model: User', () => {
   let users;
 
   beforeEach(async () => {

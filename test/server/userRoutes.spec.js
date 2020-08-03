@@ -26,8 +26,10 @@ describe('Routes: User', () => {
     }, {});
   });
 
+  // TODO: Tell them to go to server/routes.js
   describe('GET /users/unassigned', () => {
-    xit('responds with two unassigned users', async () => {
+    // TODO: Ask them to make a model method: User.getUnassignedStudents
+    it('responds with two unassigned users', async () => {
       const response = await app.get('/api/users/unassigned');
       expect(response.status).to.equal(200);
       expect(response.body.length).to.equal(2);
@@ -36,11 +38,16 @@ describe('Routes: User', () => {
       expect(names).to.include('EDDY');
     });
 
+    // TODO: Ask students to go look at the front-end to see the students
+
     xit('TODO: HANDLE ERRORS TESTS', () => {});
   });
 
   describe('GET /users/teachers', () => {
-    xit('responds with users', async () => {
+    // TODO: Clarify that it suould only respond with teachers who have mentees assigned.
+    // NOTE: It is possible be a userType teacher, but have no one assigned.
+    // TODO: Also clarify that the respond needs to include the mentees assigned to this teacher
+    it('responds with users', async () => {
       const response = await app.get('/api/users/teachers');
       expect(response.status).to.equal(200);
       expect(response.body.length).to.equal(1);
@@ -50,12 +57,14 @@ describe('Routes: User', () => {
       expect(moe.name).to.equal('MOE');
     });
 
+    // TODO: Ask students to go look at the front-end to see the teachers
+
     xit('TODO: HANDLE ERRORS TESTS', () => {});
   });
 
   describe('DELETE /users/:id', () => {
     describe('user exists', () => {
-      xit('a user can be deleted', async () => {
+      it('a user can be deleted', async () => {
         let moe = users.MOE;
         const response = await app.delete(`/api/users/${moe.id}`);
         expect(response.status).to.equal(204);
@@ -76,14 +85,17 @@ describe('Routes: User', () => {
 
   describe('POST /users', () => {
     describe('valid data', () => {
-      xit('returns the user', async () => {
+      // TODO: Make sure the new data is in the database.
+      it('returns the user', async () => {
         const response = await app.post('/api/users').send({ name: 'Flip' });
         expect(response.status).to.equal(201);
         expect(response.body.name).to.equal('Flip');
+        // TODO: Also check for the user's other fields, to make sure they're there
       });
     });
     describe('invalid data', () => {
       describe('name exists', () => {
+        // TODO: I think the repsonse should be like a 401 if they're missing necessary data
         xit('TODO: returns 500', async () => {});
       });
     });
@@ -91,7 +103,7 @@ describe('Routes: User', () => {
 
   describe('PUT /users/:id', () => {
     describe('valid data', () => {
-      xit('returns the updated user', async () => {
+      it('returns the updated user', async () => {
         const response = await app
           .put(`/api/users/${users.EDDY.id}`)
           .send({ name: 'Eddie', userType: 'TEACHER' });
