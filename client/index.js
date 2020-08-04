@@ -1,5 +1,4 @@
 import axios from 'axios';
-import html from 'html-template-tag';
 
 const teacherList = document.querySelector('#teachers');
 const unassignedList = document.querySelector('#unassigned');
