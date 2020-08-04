@@ -10,7 +10,18 @@ const {
  * isTeacher and isStudent.
  */
 
-describe('Model: User', () => {
+/**
+ * Fields: name, userType
+ *   unique, not null, defaultValue
+ * Virtual Fields: isStudent, isTeacher
+ *   getters
+ * Hooks: creating, updating, deleting
+ *   beforeSave, beforeDestroy (maybe beforeCreate, beforeUpdate)
+ *   magic method (or eager loading)
+ *   throwing custom errors
+ *
+ */
+describe.only('Model: User', () => {
   let users;
 
   beforeEach(async () => {
@@ -27,6 +38,23 @@ describe('Model: User', () => {
       acc[user.name] = user;
       return acc;
     }, {});
+  });
+
+  describe('Fields: name and userType', () => {
+    it('name can be a string', async () => {
+      const hannah = await User.create({ name: 'HANNAH' });
+      expect(hannah.name).to.equal('HANNAH');
+    });
+
+    xit('TODO: name must be unique', async () => {
+      try {
+        const hannah1 = await User.create({ name: 'HANNAH' });
+        const hannah2 = await User.create({ name: 'HANNAH' });
+        // expect(hannah.name).to.equal('HANNAH');
+      } catch (err) {
+        expect()
+      }
+    });
   });
   // TODO: Test should be about adding user's name, rather than being four of them..
   // TODO: Tell student to go look at server/db/User.js
