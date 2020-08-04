@@ -19,7 +19,8 @@ const {
  *   beforeSave, beforeDestroy (maybe beforeCreate, beforeUpdate)
  *   magic method (or eager loading)
  *   throwing custom errors
- *
+ * TODO: custom class method
+ * TODO: custom instance method
  */
 describe.only('Model: User', () => {
   let users;
@@ -40,47 +41,136 @@ describe.only('Model: User', () => {
     }, {});
   });
 
-  describe('Fields: name and userType', () => {
-    it('name can be a string', async () => {
-      const hannah = await User.create({ name: 'HANNAH' });
-      expect(hannah.name).to.equal('HANNAH');
+  describe('Basic Fields: name and userType', () => {
+    describe('name', () => {
+      it('name is a string', async () => {
+        const hannah = await User.create({ name: 'HANNAH' });
+        expect(hannah.name).to.equal('HANNAH');
+      });
+
+      it('name must be unique', async () => {
+        // We shouldn't be able to create two users with the same name.
+        await User.create({ name: 'HANNAH' });
+        await expect(User.create({ name: 'HANNAH' })).to.be.rejected;
+      });
+
+      it('name cannot be null', async () => {
+        // We shouldn't be able to create a user without a name.
+        await expect(User.create({})).to.be.rejected;
+      });
+
+      it('name cannot be an empty string', async () => {
+        // We also shouldn't be able to create a user with an empty name.
+        await expect(User.create({ name: '' })).to.be.rejected;
+      });
     });
 
-    xit('TODO: name must be unique', async () => {
-      try {
-        const hannah1 = await User.create({ name: 'HANNAH' });
-        const hannah2 = await User.create({ name: 'HANNAH' });
-        // expect(hannah.name).to.equal('HANNAH');
-      } catch (err) {
-        expect()
-      }
+    describe('userType', () => {
+      it('userType can be either "STUDENT" or "TEACHER"', async () => {
+        const hannah = await User.create({
+          name: 'HANNAH',
+          userType: 'TEACHER',
+        });
+        const ali = await User.create({ name: 'ALI', userType: 'STUDENT' });
+        expect(hannah.userType).to.equal('TEACHER');
+        expect(ali.userType).to.equal('STUDENT');
+      });
+
+      it('userType can ONLY be either "STUDENT" or "TEACHER"', async () => {
+        const aliPromise = User.create({
+          name: 'ALI',
+          userType: 'EAGER_TO_LEARN', // Invalid userType! This promise should reject.
+        });
+        await expect(aliPromise).to.be.rejected;
+      });
+
+      it('userType defaults to "STUDENT" if not provided', async () => {
+        const ali = await User.create({ name: 'ALI' });
+        expect(ali.userType).to.equal('STUDENT');
+      });
     });
   });
-  // TODO: Test should be about adding user's name, rather than being four of them..
-  // TODO: Tell student to go look at server/db/User.js
-  it('there are 4 users seeded', () => {
-    expect(Object.entries(users).length).to.equal(4);
-  });
-  // TODO: Maybe this doesn't need to be a test, since we already create the association.
-  it('lucy is moes mentor', () => {
-    expect(users.MOE.mentorId).to.equal(users.LUCY.id);
+
+  describe('Virtual Fields: isStudent and isTeacher', () => {
+    // HINT: Go see what the Sequelize documentation has to say about virtual fields:
+    // https://sequelize.org/master/manual/getters-setters-virtuals.html
+    describe('isStudent', () => {
+      it('isStudent is true if the user is a student', async () => {
+        const ali = await User.create({
+          name: 'ALI',
+          userType: 'STUDENT',
+        });
+        expect(ali.isStudent).to.equal(true);
+      });
+
+      it('isStudent is false if the user is NOT a student', async () => {
+        const hannah = await User.create({
+          name: 'HANNAH',
+          userType: 'TEACHER',
+        });
+        expect(hannah.isStudent).to.equal(false);
+      });
+
+      it("isStudent is virtual (it doesn't appear as a column in the database)", async () => {
+        const ali = await User.create({
+          name: 'ALI',
+          userType: 'STUDENT',
+        });
+        // The dataValues of a Sequelize instance reflect the columns in that database table.
+        // We want isStudent to be _derived_ from the userType property.
+        expect(ali.dataValues.isStudent).to.equal(undefined);
+      });
+    });
+
+    describe('isTeacher', () => {
+      it('isTeacher is true if the user is a teacher', async () => {
+        const hannah = await User.create({
+          name: 'HANNAH',
+          userType: 'TEACHER',
+        });
+        expect(hannah.isTeacher).to.equal(true);
+      });
+
+      it('isTeacher is false if the user is NOT a teacher', async () => {
+        const ali = await User.create({
+          name: 'ALI',
+          userType: 'STUDENT',
+        });
+        expect(ali.isTeacher).to.equal(false);
+      });
+
+      it("isTeacher is virtual (it doesn't appear as a column in the database)", async () => {
+        const hannah = await User.create({
+          name: 'HANNAH',
+          userType: 'TEACHER',
+        });
+        // The dataValues of a Sequelize instance reflect the columns in that database table.
+        // We want isTeacher to be _derived_ from the userType property.
+        expect(hannah.dataValues.isTeacher).to.equal(undefined);
+      });
+    });
   });
 
   describe('creating', () => {
-    describe('when name is not unique', () => {
-      it('can not be created', async () => {
-        try {
-          await User.create({ name: 'ERIC' });
-          await User.create({ name: 'ERIC' });
-          throw Error('noooo');
-        } catch (ex) {
-          expect(ex.errors[0].path).to.equal('name');
-        }
-      });
-    });
+    // describe('when name is not unique', () => {
+    //   it('can not be created', async () => {
+    //     try {
+    //       await User.create({ name: 'ERIC' });
+    //       await User.create({ name: 'ERIC' });
+    //       throw Error('noooo');
+    //     } catch (ex) {
+    //       expect(ex.errors[0].path).to.equal('name');
+    //     }
+    //   });
+    // });
     // TODO: Needs to make a test for userType BEFORE this test
     // TODO: THe error message shouldn't have to be hard-coded.
     // NOTE: Have students seen manual errors thrown in Sequelize hooks before?
+    describe('Hooks: beforeCreate, beforeUpdate, beforeDestroy, beforeSave', () => {
+      // HINT: You may not need to use all four of the above-mentioned hooks.
+      // Go take a look at the Sequelize documentation on hooks:
+      // https://sequelize.org/master/manual/hooks.html
+    });
     describe('when a mentor is not a TEACHER', () => {
       it('can NOT be created', async () => {
         const eddy = users.EDDY;

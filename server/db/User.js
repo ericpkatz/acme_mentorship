@@ -5,7 +5,11 @@ const User = db.define('user', {
   // Add your Sequelize fields here
   name: {
     type: Sequelize.STRING,
+    allowNull: false,
     unique: true,
+    validate: {
+      notEmpty: true
+    }
   },
   userType: {
     type: Sequelize.ENUM('STUDENT', 'TEACHER'),
