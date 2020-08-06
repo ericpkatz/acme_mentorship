@@ -20,7 +20,7 @@ const {
  *   beforeSave, beforeDestroy (maybe beforeCreate, beforeUpdate)
  *   magic method (or eager loading)
  *   throwing custom errors
- * TODO: custom class method
+ * TODO: custom class method, e.g. User.findUnassigned, User.findTeachers
  * TODO: custom instance method
  */
 describe.only('Model: User', () => {
@@ -198,6 +198,20 @@ describe.only('Model: User', () => {
           mentorId: freddy.id,
         });
         expect(jerry.mentorId).to.equal(freddy.id);
+      });
+    });
+
+    describe('Updating', () => {
+      it('cannot update a user with a mentor who is not a TEACHER', async () => {
+        const freddy = await User.create({ name: 'FREDDY' });
+        const jerry = await User.create({ name: 'JERRY' });
+        await expect(jerry.update({ mentorId: freddy.id })).to.be.rejected;
+      });
+
+      it('can update a user with a mentor who is a TEACHER', async () => {
+        const freddy = await User.create({ name: 'FREDDY' });
+        const jerry = await User.create({ name: 'JERRY' });
+        await expect(jerry.update({ mentorId: freddy.id })).to.be.rejected;
       });
     });
   });
