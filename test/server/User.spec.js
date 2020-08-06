@@ -1,4 +1,5 @@
 const { expect } = require('chai');
+const { cyan } = require('chalk');
 const {
   db,
   models: { User },
@@ -151,42 +152,52 @@ describe.only('Model: User', () => {
     });
   });
 
-  describe('creating', () => {
-    // describe('when name is not unique', () => {
-    //   it('can not be created', async () => {
-    //     try {
-    //       await User.create({ name: 'ERIC' });
-    //       await User.create({ name: 'ERIC' });
-    //       throw Error('noooo');
-    //     } catch (ex) {
-    //       expect(ex.errors[0].path).to.equal('name');
-    //     }
-    //   });
-    // });
-    // TODO: Needs to make a test for userType BEFORE this test
-    // TODO: THe error message shouldn't have to be hard-coded.
-    // NOTE: Have students seen manual errors thrown in Sequelize hooks before?
-    describe('Hooks: beforeCreate, beforeUpdate, beforeDestroy, beforeSave', () => {
-      // HINT: You may not need to use all four of the above-mentioned hooks.
-      // Go take a look at the Sequelize documentation on hooks:
-      // https://sequelize.org/master/manual/hooks.html
+  // describe('when name is not unique', () => {
+  //   it('can not be created', async () => {
+  //     try {
+  //       await User.create({ name: 'ERIC' });
+  //       await User.create({ name: 'ERIC' });
+  //       throw Error('noooo');
+  //     } catch (ex) {
+  //       expect(ex.errors[0].path).to.equal('name');
+  //     }
+  //   });
+  // });
+  // TODO: Needs to make a test for userType BEFORE this test
+  // TODO: THe error message shouldn't have to be hard-coded.
+  // NOTE: Have students seen manual errors thrown in Sequelize hooks before?
+  describe('Hooks: beforeCreate, beforeUpdate, beforeDestroy, beforeSave', () => {
+    before(() => {
+      console.log(
+        cyan(`
+    HINT: You may not need to use all four of the above-mentioned hooks.
+    Go take a look at the Sequelize documentation on hooks for more info:
+    https://sequelize.org/master/manual/hooks.html
+`)
+      );
     });
-    describe('when a mentor is not a TEACHER', () => {
-      it('can NOT be created', async () => {
-        const eddy = users.EDDY;
-        try {
-          await User.create({ name: 'JERRY', mentorId: eddy.id });
-          throw Error('noooo');
-        } catch (ex) {
-          expect(ex.message).to.equal('MENTOR MUST BE TEACHER');
-        }
+    describe('Creation', () => {
+      it('cannot create a user whose mentor is not a TEACHER', async () => {
+        const freddy = await User.create({
+          name: 'FREDDY',
+          userType: 'STUDENT',
+        });
+        const jerryPromise = User.create({
+          name: 'JERRY',
+          mentorId: freddy.id,
+        });
+        await expect(jerryPromise).to.be.rejected;
       });
-    });
-    //TODO: Tell them that userType should be an ENUM
-    describe('when a mentor is a TEACHER', () => {
-      it('can be created', async () => {
-        const lucy = users.LUCY;
-        await User.create({ name: 'JERRY', mentorId: lucy.id });
+      it('can create a user whose mentor is a TEACHER', async () => {
+        const freddy = await User.create({
+          name: 'FREDDY',
+          userType: 'TEACHER',
+        });
+        const jerry = await User.create({
+          name: 'JERRY',
+          mentorId: freddy.id,
+        });
+        expect(jerry.mentorId).to.equal(freddy.id);
       });
     });
   });
