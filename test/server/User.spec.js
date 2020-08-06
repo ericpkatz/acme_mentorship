@@ -216,30 +216,6 @@ describe.only('Model: User', () => {
     });
   });
 
-  describe('updating', () => {
-    describe('when a mentor is not a TEACHER', () => {
-      // TODO: Clarify what sort of updates are valid?
-      // TODO: Even on updates, you cannot set a non-teacher to be someone's mentor.
-      it('can NOT be updated', async () => {
-        const eddy = users.EDDY;
-        const wanda = users.WANDA;
-        try {
-          await eddy.update({ mentorId: wanda.id });
-          throw Error('noooo');
-        } catch (ex) {
-          expect(ex.message).to.equal('MENTOR MUST BE TEACHER');
-        }
-      });
-    });
-    describe('when a mentor is a TEACHER', () => {
-      it('can be updated', async () => {
-        const eddy = users.EDDY;
-        const lucy = users.LUCY;
-        await eddy.update({ mentorId: lucy.id });
-      });
-    });
-  });
-
   describe('deleting', () => {
     describe('a teacher WHO mentors', () => {
       // TODO: Maybe throw them a hint to look at beforeDestroy hook
