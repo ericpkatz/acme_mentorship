@@ -8,8 +8,8 @@ const User = db.define('user', {
     allowNull: false,
     unique: true,
     validate: {
-      notEmpty: true
-    }
+      notEmpty: true,
+    },
   },
   userType: {
     type: Sequelize.ENUM('STUDENT', 'TEACHER'),
@@ -64,8 +64,10 @@ User.beforeDestroy(async (user) => {
  *       /   \
  *     MOE   WANDA
  * (mentee)  (mentee)
+ *
  * You can find the mentor of a user by the mentorId field
  * In Sequelize, you can also use the magic method getMentor()
+ * You can find a user's mentees with the magic method getMentees()
  */
 
 User.belongsTo(User, { as: 'mentor' });
